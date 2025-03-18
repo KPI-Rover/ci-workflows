@@ -1,0 +1,32 @@
+name: Test CI
+on:
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  verify_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run:
+          docker build -t kpi-rover .
+      - name: get ROS
+        run: docker pull osrf/ros:jazzy-desktop-full
+      - name: install dependenices
+        run:
+          apt-get update 
+          apt-get upgrade -y 
+          apt-get install -y python3-rosdep net-tools iputils-ping nano vim
+      - name: build project
+        run:
+          docker run --rm -it \
+          --user $(id -u):$(id -g) \
+          -v $(pwd):/workspace \
+          -w /workspace \
+          kpi-rover colcon build
+      - name: colcon_test
+        run:
+          docker run kpi-rover colcon test
