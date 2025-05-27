@@ -1,0 +1,27 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  verify_pull_request:
+    runs-on: ubuntu-latest
+    container: 
+      image: ghcr.io/kpi-rover/ci-ros-image:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GH_PAT }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Build project
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon build
+      - name: Test project
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon test
