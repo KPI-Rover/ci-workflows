@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'Dockerfile'
+      - 'docker/**'
 
 jobs:
   publish_image:
@@ -19,7 +19,7 @@ jobs:
           echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build image
         run: |
-          docker build ./ --tag ghcr.io/kpi-rover/ci-ros-image:latest
+          docker build ./docker/ --tag ghcr.io/kpi-rover/ci-ros-image:latest
       - name: Push the image
         run: |
           docker push ghcr.io/kpi-rover/ci-ros-image:latest
